@@ -350,8 +350,14 @@ dotnet_diagnostic.CS8618.severity = none
 # IDE0005
 dotnet_diagnostic.IDE0005.severity = none
 
+# IDE0032: Use auto property
+dotnet_diagnostic.IDE0032.severity = none
+
 # IDE0046: Convert to conditional expression
 dotnet_diagnostic.IDE0046.severity = none
+
+# IDE0053: Use expression body for lambda expression
+dotnet_diagnostic.IDE0053.severity = none
 
 # IDE0058: Expression value is never used
 dotnet_diagnostic.IDE0058.severity = none
@@ -384,6 +390,9 @@ dotnet_diagnostic.S2094.severity = none
 
 # S2325: Methods and properties that don't access instance data should be static
 dotnet_diagnostic.S2325.severity = none
+
+# S2326: Generic type parameter is not used in interface
+dotnet_diagnostic.S2326.severity = none
 
 # S2365: Properties should not make collection or array copies
 dotnet_diagnostic.S2365.severity = none

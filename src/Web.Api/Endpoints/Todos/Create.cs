@@ -1,6 +1,6 @@
-﻿using Application.Todos.Create;
+﻿using Application.Abstractions.Messaging;
+using Application.Todos.Create;
 using Domain.Todos;
-using MediatR;
 using SharedKernel;
 using Web.Api.Extensions;
 using Web.Api.Infrastructure;
@@ -20,7 +20,10 @@ internal sealed class Create : IEndpoint
 
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapPost("todos", async (Request request, ISender sender, CancellationToken cancellationToken) =>
+        app.MapPost("todos", async (
+            Request request,
+            ICommandHandler<CreateTodoCommand, Guid> handler,
+            CancellationToken cancellationToken) =>
         {
             var command = new CreateTodoCommand
             {
@@ -31,7 +34,7 @@ internal sealed class Create : IEndpoint
                 Priority = (Priority)request.Priority
             };
 
-            Result<Guid> result = await sender.Send(command, cancellationToken);
+            Result<Guid> result = await handler.Handle(command, cancellationToken);
 
             return result.Match(Results.Ok, CustomResults.Problem);
         })

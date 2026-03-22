@@ -1,5 +1,5 @@
-﻿using Application.Users.Register;
-using MediatR;
+﻿using Application.Abstractions.Messaging;
+using Application.Users.Register;
 using SharedKernel;
 using Web.Api.Extensions;
 using Web.Api.Infrastructure;
@@ -12,7 +12,10 @@ internal sealed class Register : IEndpoint
 
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapPost("users/register", async (Request request, ISender sender, CancellationToken cancellationToken) =>
+        app.MapPost("users/register", async (
+            Request request,
+            ICommandHandler<RegisterUserCommand, Guid> handler,
+            CancellationToken cancellationToken) =>
         {
             var command = new RegisterUserCommand(
                 request.Email,
@@ -20,7 +23,7 @@ internal sealed class Register : IEndpoint
                 request.LastName,
                 request.Password);
 
-            Result<Guid> result = await sender.Send(command, cancellationToken);
+            Result<Guid> result = await handler.Handle(command, cancellationToken);
 
             return result.Match(Results.Ok, CustomResults.Problem);
         })

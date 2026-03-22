@@ -4,6 +4,7 @@ using Application.Abstractions.Data;
 using Infrastructure.Authentication;
 using Infrastructure.Authorization;
 using Infrastructure.Database;
+using Infrastructure.DomainEvents;
 using Infrastructure.Time;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -31,6 +32,8 @@ public static class DependencyInjection
     private static IServiceCollection AddServices(this IServiceCollection services)
     {
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
+
+        services.AddTransient<IDomainEventsDispatcher, DomainEventsDispatcher>();
 
         return services;
     }

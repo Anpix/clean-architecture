@@ -1,5 +1,5 @@
-﻿using Application.Users.Login;
-using MediatR;
+﻿using Application.Abstractions.Messaging;
+using Application.Users.Login;
 using SharedKernel;
 using Web.Api.Extensions;
 using Web.Api.Infrastructure;
@@ -12,11 +12,14 @@ internal sealed class Login : IEndpoint
 
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapPost("users/login", async (Request request, ISender sender, CancellationToken cancellationToken) =>
+        app.MapPost("users/login", async (
+            Request request,
+            ICommandHandler<LoginUserCommand, string> handler,
+            CancellationToken cancellationToken) =>
         {
             var command = new LoginUserCommand(request.Email, request.Password);
 
-            Result<string> result = await sender.Send(command, cancellationToken);
+            Result<string> result = await handler.Handle(command, cancellationToken);
 
             return result.Match(Results.Ok, CustomResults.Problem);
         })

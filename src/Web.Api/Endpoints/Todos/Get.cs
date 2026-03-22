@@ -1,5 +1,5 @@
-﻿using Application.Todos.Get;
-using MediatR;
+﻿using Application.Abstractions.Messaging;
+using Application.Todos.Get;
 using SharedKernel;
 using Web.Api.Extensions;
 using Web.Api.Infrastructure;
@@ -10,11 +10,14 @@ internal sealed class Get : IEndpoint
 {
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapGet("todos", async (Guid userId, ISender sender, CancellationToken cancellationToken) =>
+        app.MapGet("todos", async (
+            Guid userId,
+            IQueryHandler<GetTodosQuery, List<TodoResponse>> handler,
+            CancellationToken cancellationToken) =>
         {
-            var command = new GetTodosQuery(userId);
+            var query = new GetTodosQuery(userId);
 
-            Result<List<TodoResponse>> result = await sender.Send(command, cancellationToken);
+            Result<List<TodoResponse>> result = await handler.Handle(query, cancellationToken);
 
             return result.Match(Results.Ok, CustomResults.Problem);
         })

@@ -1,13 +1,15 @@
 ﻿using Application.Abstractions.Data;
 using Domain.Todos;
 using Domain.Users;
-using MediatR;
+using Infrastructure.DomainEvents;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
 
 namespace Infrastructure.Database;
 
-public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IPublisher publisher)
+public sealed class ApplicationDbContext(
+    DbContextOptions<ApplicationDbContext> options,
+    IDomainEventsDispatcher domainEventsDispatcher)
     : DbContext(options), IApplicationDbContext
 {
     public DbSet<User> Users { get; set; }
@@ -55,9 +57,6 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
             })
             .ToList();
 
-        foreach (IDomainEvent domainEvent in domainEvents)
-        {
-            await publisher.Publish(domainEvent);
-        }
+        await domainEventsDispatcher.DispatchAsync(domainEvents);
     }
 }
